@@ -65,6 +65,21 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
+function pathRoundedRect(x, y, w, h, radius) {
+  const r = Math.max(0, Math.min(radius, Math.min(w, h) / 2));
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
 function updateHud() {
   hud.score.textContent = state.score;
   hud.lives.textContent = state.lives;
@@ -343,20 +358,46 @@ function update(dt) {
 }
 
 function drawBricks() {
+  const shimmerTime = performance.now() * 0.0035;
+
   for (const brick of state.bricks) {
     if (!brick.alive) continue;
 
     const ratio = brick.hp / brick.maxHp;
-    const hue = 170 - ratio * 115;
-    ctx.fillStyle = `hsla(${hue}, 90%, ${48 + ratio * 10}%, 0.95)`;
-    ctx.fillRect(brick.x, brick.y, brick.w, brick.h);
+    const shimmer = (Math.sin(shimmerTime + brick.x * 0.018 + brick.y * 0.025) + 1) / 2;
+    const glow = 14 + ratio * 14 + shimmer * 2;
 
-    ctx.strokeStyle = "rgba(255,255,255,0.35)";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(brick.x + 0.5, brick.y + 0.5, brick.w - 1, brick.h - 1);
+    const brickGradient = ctx.createLinearGradient(brick.x, brick.y, brick.x, brick.y + brick.h);
+    brickGradient.addColorStop(0, `hsla(190, 100%, ${70 + shimmer * 7}%, 0.99)`);
+    brickGradient.addColorStop(0.52, `hsla(206, 92%, ${56 + ratio * 8}%, 0.98)`);
+    brickGradient.addColorStop(1, `hsla(224, 84%, ${38 + ratio * 6}%, 0.99)`);
+
+    ctx.shadowBlur = glow;
+    ctx.shadowColor = `hsla(198, 100%, ${66 + shimmer * 6}%, ${0.6 + ratio * 0.22})`;
+    ctx.fillStyle = brickGradient;
+    pathRoundedRect(brick.x, brick.y, brick.w, brick.h, 6);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    const sheenGradient = ctx.createLinearGradient(brick.x, brick.y, brick.x, brick.y + brick.h);
+    sheenGradient.addColorStop(0, `rgba(241, 253, 255, ${0.4 + shimmer * 0.2})`);
+    sheenGradient.addColorStop(0.42, "rgba(220, 247, 255, 0.08)");
+    sheenGradient.addColorStop(1, "rgba(220, 247, 255, 0)");
+    ctx.fillStyle = sheenGradient;
+    pathRoundedRect(brick.x + 1, brick.y + 1, brick.w - 2, brick.h * 0.6, 5);
+    ctx.fill();
+
+    const edgeGradient = ctx.createLinearGradient(brick.x, brick.y, brick.x + brick.w, brick.y + brick.h);
+    edgeGradient.addColorStop(0, "rgba(227, 251, 255, 0.95)");
+    edgeGradient.addColorStop(0.6, "rgba(173, 233, 255, 0.5)");
+    edgeGradient.addColorStop(1, "rgba(122, 199, 255, 0.78)");
+    ctx.strokeStyle = edgeGradient;
+    ctx.lineWidth = 1.2;
+    pathRoundedRect(brick.x + 0.5, brick.y + 0.5, brick.w - 1, brick.h - 1, 6);
+    ctx.stroke();
 
     if (brick.hp > 1) {
-      ctx.fillStyle = "rgba(7, 13, 30, 0.8)";
+      ctx.fillStyle = "rgba(4, 12, 33, 0.78)";
       ctx.font = "bold 12px Trebuchet MS";
       ctx.textAlign = "center";
       ctx.fillText(String(brick.hp), brick.x + brick.w / 2, brick.y + brick.h / 2 + 4);
