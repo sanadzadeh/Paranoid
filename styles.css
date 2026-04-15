@@ -71,31 +71,13 @@ body {
 }
 
 .hud-item {
-  background:
-    linear-gradient(160deg, rgba(29, 73, 156, 0.68), rgba(20, 29, 78, 0.8) 62%, rgba(9, 16, 45, 0.88)),
-    var(--panel);
-  border: 1px solid rgba(138, 211, 255, 0.52);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
   border-radius: 12px;
   padding: 0.6rem 0.8rem;
   display: flex;
   flex-direction: column;
-  box-shadow:
-    inset 0 1px 0 rgba(230, 247, 255, 0.26),
-    0 0 18px rgba(53, 108, 255, 0.3),
-    0 0 34px rgba(62, 169, 255, 0.16);
-  position: relative;
-  overflow: hidden;
-}
-
-.hud-item::after {
-  content: "";
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  top: 0;
-  height: 42%;
-  background: linear-gradient(180deg, rgba(207, 244, 255, 0.25), rgba(207, 244, 255, 0));
-  pointer-events: none;
+  box-shadow: 0 0 18px rgba(53, 108, 255, 0.25);
 }
 
 .label {

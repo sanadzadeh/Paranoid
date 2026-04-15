@@ -347,40 +347,16 @@ function drawBricks() {
     if (!brick.alive) continue;
 
     const ratio = brick.hp / brick.maxHp;
-    const glow = 10 + ratio * 12;
-    const brickGradient = ctx.createLinearGradient(brick.x, brick.y, brick.x, brick.y + brick.h);
-    brickGradient.addColorStop(0, `hsla(${198 - ratio * 20}, 100%, ${66 + ratio * 8}%, 0.98)`);
-    brickGradient.addColorStop(0.56, `hsla(${212 - ratio * 18}, 88%, ${50 + ratio * 7}%, 0.96)`);
-    brickGradient.addColorStop(1, `hsla(${228 - ratio * 12}, 80%, ${35 + ratio * 6}%, 0.97)`);
+    const hue = 170 - ratio * 115;
+    ctx.fillStyle = `hsla(${hue}, 90%, ${48 + ratio * 10}%, 0.95)`;
+    ctx.fillRect(brick.x, brick.y, brick.w, brick.h);
 
-    ctx.shadowBlur = glow;
-    ctx.shadowColor = `hsla(${202 - ratio * 10}, 100%, 66%, ${0.5 + ratio * 0.22})`;
-    ctx.fillStyle = brickGradient;
-    ctx.beginPath();
-    ctx.roundRect(brick.x, brick.y, brick.w, brick.h, 6);
-    ctx.fill();
-    ctx.closePath();
-    ctx.shadowBlur = 0;
-
-    const sheenGradient = ctx.createLinearGradient(brick.x, brick.y, brick.x, brick.y + brick.h);
-    sheenGradient.addColorStop(0, "rgba(220, 247, 255, 0.34)");
-    sheenGradient.addColorStop(0.46, "rgba(220, 247, 255, 0.06)");
-    sheenGradient.addColorStop(1, "rgba(220, 247, 255, 0)");
-    ctx.fillStyle = sheenGradient;
-    ctx.beginPath();
-    ctx.roundRect(brick.x + 1, brick.y + 1, brick.w - 2, brick.h * 0.6, 5);
-    ctx.fill();
-    ctx.closePath();
-
-    ctx.strokeStyle = "rgba(228, 247, 255, 0.45)";
-    ctx.lineWidth = 1.1;
-    ctx.beginPath();
-    ctx.roundRect(brick.x + 0.5, brick.y + 0.5, brick.w - 1, brick.h - 1, 6);
-    ctx.stroke();
-    ctx.closePath();
+    ctx.strokeStyle = "rgba(255,255,255,0.35)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(brick.x + 0.5, brick.y + 0.5, brick.w - 1, brick.h - 1);
 
     if (brick.hp > 1) {
-      ctx.fillStyle = "rgba(4, 12, 33, 0.78)";
+      ctx.fillStyle = "rgba(7, 13, 30, 0.8)";
       ctx.font = "bold 12px Trebuchet MS";
       ctx.textAlign = "center";
       ctx.fillText(String(brick.hp), brick.x + brick.w / 2, brick.y + brick.h / 2 + 4);
